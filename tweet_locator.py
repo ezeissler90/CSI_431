@@ -6,15 +6,16 @@ Created on Wed Apr 01 18:21:30 2015
 """
 
 from pymongo import MongoClient
-from location_method import location_filter
+from location_methods import location_filter
 
-client = MongoClient()
-# hardcode database 'test_database'
-db = client.test_database
+client = MongoClient('52.5.211.193', '27017')
 
-# hardcode collection names 'posts' 'usaers'
-s_coll = db.posts   #source
-t_coll = db.usaers  #target
+# hardcode database 'corpus'
+db = client.corpuse
+
+# hardcode collection names 'twitter' 'filtered_tweets'
+s_coll = db.twitter   #source
+t_coll = db.filtered_tweets  #target
 
 ## Names of Countries to find tweets for
 locs = ["united states"]
