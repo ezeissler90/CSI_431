@@ -10,10 +10,8 @@ from LocationResolver import LocationResolver
 # Returns True if successful, false otherwise
 def location_filter(location, db, s_coll, t_coll):
     ## list of tweets
-    tweets = list(s_coll.find())
-    
     resolver = LocationResolver.getLocationResolver()
-    for tweet in tweets:
+    for tweet in s_coll.find():
         try:
         ##   IDEA:  GUI to choose different locations
         ##          -> Just put locations into list

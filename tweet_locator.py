@@ -8,10 +8,10 @@ Created on Wed Apr 01 18:21:30 2015
 from pymongo import MongoClient
 from location_methods import location_filter
 
-client = MongoClient('52.5.211.193', '27017')
+client = MongoClient('52.5.211.193', 27017)
 
 # hardcode database 'corpus'
-db = client.corpuse
+db = client.corpus
 
 # hardcode collection names 'twitter' 'filtered_tweets'
 s_coll = db.twitter   #source
