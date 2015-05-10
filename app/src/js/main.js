@@ -68,7 +68,7 @@ $(function () {
 
     if (data) {
       data.forEach(function(item) {
-        key = item.loc[0] + '|' + item.loc[1];
+        key = item.coordinates[0] + '|' + item.coordinates[1];
         if (key in myApp.locationBin) {
           myApp.locationBin[key].binCount = 1 + myApp.locationBin[key].binCount;
           myApp.locationBin[key].urls.push(item.url);
@@ -118,7 +118,7 @@ $(function () {
 
     myApp.pointFeature
       .data(aggdata.data)
-      .position(function (d) { return { x:d.loc[0], y:d.loc[1] } })
+      .position(function (d) { return { x:d.coordinates[0], y:d.coordinates[1] } })
       .style('radius', function (d) { return myApp.scale(d.binCount); })
       .style('stroke', false)
       .style('fillOpacity', 0.4)
