@@ -20,7 +20,8 @@ class Classifier(Frame):
         return
         
     def positive(self):
-        self.curr_tweet['class'] = 1.0
+        self.curr_tweet['mental_illness'] = 1.0
+        #print self.curr_tweet['mental_illness']
         if 'id' in self.curr_tweet:
             self.p.update({'id': self.curr_tweet['id']}, {"$set": self.curr_tweet}, upsert = False)
         self.count_update()
@@ -28,9 +29,14 @@ class Classifier(Frame):
         return
     
     def negative(self):
-        self.curr_tweet['class'] = -1.0
+        self.curr_tweet['mental_illness'] = -1.0
         if 'id' in self.curr_tweet:
             self.p.update({'id': self.curr_tweet['id']}, {"$set": self.curr_tweet}, upsert = False)
+        self.count_update()
+        self.clear_and_load()
+        return
+        
+    def pass_tweet(self):
         self.count_update()
         self.clear_and_load()
         return
@@ -49,9 +55,11 @@ class Classifier(Frame):
         return True
         
     def get_next_unclassified(self):
-        while 'class' in self.curr_tweet:
+        while 'mental_illness' in self.curr_tweet:
             if not self.next_tweet():
                 self.curr_tweet = {'text': "No tweets remaining."}
+            elif int(self.curr_tweet['mental_illness']) == 0:
+                return
             else:
                 self.tvar.set(self.position+1)
         return
@@ -90,15 +98,18 @@ class Classifier(Frame):
         self.classify_no = Button(self, text="Negative", command=self.negative)
         self.classify_no.grid(row = 1, column = 3, sticky='N', pady=10, padx=5)
         
+        self.classify_pass = Button(self, text="Pass", command=self.pass_tweet)
+        self.classify_pass.grid(row = 2, column = 3, sticky='S', pady=10, padx=5)
+        
     def __init__(self, master=None):
         Frame.__init__(self, master, bg = "#4A245E")
-        self.client = MongoClient()
+        self.client = MongoClient('52.5.211.193', 27017)
         ## hardcode database name 'test_database
-        self.db = self.client.test_database
+        self.db = self.client.corpus
         ## hardcode collection name 'posts'
-        self.p = self.db.posts
+        self.p = self.db.filtered_tweets
         self.position = 0
-        self.tweets = self.p.find()
+        self.tweets = self.p.find({}, {'_id': 0})
         self.curr_tweet = self.tweets[0]
         self.tvar = IntVar(0)
         self.var = IntVar(0)
