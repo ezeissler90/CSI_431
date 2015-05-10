@@ -151,7 +151,7 @@ $(function () {
               // Format the data
               var adsPerDay = {}, newData = [], i, time, month, inst, timeString, item;
               for (i = 0; i < data.length; ++i) {
-                time = new Date(data[i]["time"]);
+                time = new Date(data[i]["created_at"]);
                 month = (time.getMonth() + 1);
                 if (month < 10) {
                   month = ("0" + month);
@@ -311,8 +311,8 @@ $(function () {
   $.ajax( "api/v1/data" )
     .done(function(range) {
       var format = d3.time.format("%Y-%m-%d %H:%M:%S"),
-          min = new Date(range.duration.start.time * 1000),
-          max = new Date(range.duration.end.time * 1000);
+          min = new Date(range.duration.start.created_at),
+          max = new Date(range.duration.end.created_at);
 
       // Set the date range
       $( "#slider" ).slider({

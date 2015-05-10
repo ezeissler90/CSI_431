@@ -54,10 +54,10 @@ class Geospace(girder.api.rest.Resource):
             result['duration'] = {
                 "start": [i for i in coll.find(
                     {"created_at": { "$exists": True, "$nin": ["None"] } } ).sort(
-                        "created_at",  1).limit(1)][0],
+                        "created_at",  -1).limit(1)][0],
                 "end":   [i for i in coll.find(
                     {"created_at": { "$exists": True, "$nin": ["None"] } } ).sort(
-                        "created_at", -1).limit(1)][0]
+                        "created_at", 1).limit(1)][0]
             };
 
             print result
@@ -110,8 +110,7 @@ class Geospace(girder.api.rest.Resource):
         print "geospatial_query", geospatial_query
 
         if not use_location:
-            query_result = coll.find({"created_at":
-                {"$gte": start_time, "$lt": end_time}},
+            query_result = coll.find({},
                 skip=offset, limit=limit, sort=sort)
         else:
             # When using location do not limit by created_at for now
