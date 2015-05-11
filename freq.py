@@ -17,15 +17,16 @@ def main():
             try:
                 temp = temp.decode('ascii')
                 if ( (not ("http" in temp)) and (not ("@" in temp) ) and (not any(char.isdigit() for char in temp)) ):
-                    for word in temp.split("."):
-                        word = word.strip(".@#!&()[]{}\":?\\\/-_|<>,'")
-                        word = word.lower()
-                        # print word
-                        if (word != 'rt'):
-                            if word in vocab:
-                                vocab[word] += 1
-                            else:
-                                vocab[word] = 1
+                    for t in temp.split("."):
+                        for word in t.split("$"):
+                            word = word.strip(".@#!&()[]{}\":?\\\/-_|<>,'")
+                            word = word.lower()
+                            # print word
+                            if (word != 'rt'):
+                                if word in vocab:
+                                    vocab[word] += 1
+                                else:
+                                    vocab[word] = 1
             except:
                 print "skipped: ", word
         print vocab
