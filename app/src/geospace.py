@@ -53,14 +53,13 @@ class Geospace(girder.api.rest.Resource):
         if (time_range is None):
             result['duration'] = {
                 "start": [i for i in coll.find(
-                    {"created_at": { "$exists": True, "$nin": ["None"] } } ).sort(
-                        "created_at",  -1).limit(1)][0],
+                    {"time": { "$exists": True, "$nin": ["None"] } } ).sort(
+                        "time",  1).limit(1)][0],
                 "end":   [i for i in coll.find(
-                    {"created_at": { "$exists": True, "$nin": ["None"] } } ).sort(
-                        "created_at", 1).limit(1)][0]
+                    {"time": { "$exists": True, "$nin": ["None"] } } ).sort(
+                        "time", -1).limit(1)][0]
             };
 
-            print result
             return result;
 
         # Get location if provided
@@ -108,15 +107,18 @@ class Geospace(girder.api.rest.Resource):
         end_time = end
 
         print "geospatial_query", geospatial_query
+        print "start_time ", start_time
+        print "end_time ", end_time
 
         if not use_location:
-            query_result = coll.find({},
-                skip=offset, limit=limit, sort=sort)
+            query_result = coll.find({"time":
+                {"$gte": start_time, "$lt": end_time}},
+                skip=offset, limit=limit, sort=False)
         else:
-            # When using location do not limit by created_at for now
+            # When using location do not limit by time for now
             query_result = coll.find( {"$and":[
                     geospatial_query,
-                    {"created_at":
+                    {"time":
                         {"$gte": start_time, "$lt": end_time}
                     }]
                 },

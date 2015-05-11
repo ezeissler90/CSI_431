@@ -68,18 +68,20 @@ $(function () {
 
     if (data) {
       data.forEach(function(item) {
-        key = item.coordinates[0] + '|' + item.coordinates[1];
-        if (key in myApp.locationBin) {
-          myApp.locationBin[key].binCount = 1 + myApp.locationBin[key].binCount;
-          myApp.locationBin[key].urls.push(item.url);
-          if (myApp.locationBin[key].binCount > max) {
-            max = myApp.locationBin[key].binCount
+        if (item.coordinates) {
+          key = item.coordinates[0] + '|' + item.coordinates[1];
+          if (key in myApp.locationBin) {
+            myApp.locationBin[key].binCount = 1 + myApp.locationBin[key].binCount;
+            myApp.locationBin[key].urls.push(item.url);
+            if (myApp.locationBin[key].binCount > max) {
+              max = myApp.locationBin[key].binCount
+            }
+          } else {
+            item.binCount = 1;
+            item.urls = [item.url];
+            myApp.locationBin[key] = item;
+            newdata.push(item);
           }
-        } else {
-          item.binCount = 1;
-          item.urls = [item.url];
-          myApp.locationBin[key] = item;
-          newdata.push(item);
         }
       });
     }
@@ -151,7 +153,7 @@ $(function () {
               // Format the data
               var adsPerDay = {}, newData = [], i, time, month, inst, timeString, item;
               for (i = 0; i < data.length; ++i) {
-                time = new Date(data[i]["created_at"]);
+                time = new Date(data[i]["time"]);
                 month = (time.getMonth() + 1);
                 if (month < 10) {
                   month = ("0" + month);
@@ -311,15 +313,15 @@ $(function () {
   $.ajax( "api/v1/data" )
     .done(function(range) {
       var format = d3.time.format("%Y-%m-%d %H:%M:%S"),
-          min = new Date(range.duration.start.created_at),
-          max = new Date(range.duration.end.created_at);
+          min = new Date(range.duration.start.time * 1000),
+          max = new Date(range.duration.end.time * 1000);
 
       // Set the date range
       $( "#slider" ).slider({
         range: true,
-        min: min.getTime()/1000,
-        max: max.getTime()/1000,
-        values: [ min.getTime()/1000, min.getTime()/1000 + 24 * 3600 * 180 ],
+        min: min.getTime() / 1000,
+        max: max.getTime() / 1000,
+        values: [ min.getTime() / 1000, min.getTime() / 1000 + 60 ],
         stop: function( event, ui ) {
           myApp.runQuery();
         }
