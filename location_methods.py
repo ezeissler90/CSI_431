@@ -7,8 +7,13 @@ Created on Thu Apr 02 15:10:42 2015
 import json
 from LocationResolver import LocationResolver
 
-def execute(range):
-    for tweet in s_coll.find(range[0]:range[1]):
+def execute(kwargs):
+    s_coll = kwargs.get("s_coll")
+    t_coll = kwargs.get("t_coll")
+    indexrange = kwargs.get("indexrange")
+    print indexrange
+    for tweet in s_coll.find()[indexrange[0]:indexrange[1]]:
+        print "processing", tweet["id"]
         try:
             ##   IDEA:  GUI to choose different locations
             ##          -> Just put locations into list
@@ -29,17 +34,24 @@ def execute(range):
 
 # Returns True if successful, false otherwise
 def location_filter(location, db, s_coll, t_coll):
-    from multiprocessing import Pool
+    from multiprocessing import Pool, Process
     ## list of tweets
     resolver = LocationResolver.getLocationResolver()
     count = s_coll.find().count()
-    p = Pool(10)
     start_index = 0
     end_index = 0
+    ps = []
     for i in xrange(0, 10, 1):
-        end_index += count / 10.0
-        p.map(execute, [start_index, end_index])
+        end_index += int(count / 10.0)
+        arg1 = dict(s_coll=s_coll, t_coll=t_coll, indexrange=[start_index, end_index])
+        p = Process(target=execute, args=(arg1,))
         start_index = end_index
+        p.start()
+        ps.append(p)
+    for p in ps:
+        p.join()
+
+    
     return True
 
 ## Determines whether the tweet_loc tweet location matches any contained
