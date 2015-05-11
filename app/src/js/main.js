@@ -67,9 +67,10 @@ $(function () {
     myApp.locationBin = {};
 
     if (data) {
+      console.log(data);
       data.forEach(function(item) {
         if (item.coordinates) {
-          key = item.coordinates[0] + '|' + item.coordinates[1];
+          key = item.coordinates.coordinates[0] + '|' + item.coordinates.coordinates[1];
           if (key in myApp.locationBin) {
             myApp.locationBin[key].binCount = 1 + myApp.locationBin[key].binCount;
             myApp.locationBin[key].urls.push(item.url);
@@ -106,9 +107,16 @@ $(function () {
   // Create visualization given a dataset
   //--------------------------------------------------------------------------
   function render(data, callback) {
-    var aggdata = aggregateByLocation(data);
-    myApp.scale = d3.scale.linear().domain([aggdata.min, aggdata.max])
-              .range([2, 50]);
+    // var aggdata = aggregateByLocation(data);
+    // console.log(aggdata);
+    var geodata = [];
+    data.forEach(function(d) {
+      if (d.coordinates) {
+        geodata.push(d);
+      }
+    });
+    // myApp.scale = d3.scale.linear().domain([aggdata.min, aggdata.max])
+    //           .range([5, 20]);
     if (myApp.pointFeature === undefined) {
       myApp.pointFeature = myApp.map
                        .createLayer('feature')
@@ -119,12 +127,20 @@ $(function () {
     }
 
     myApp.pointFeature
-      .data(aggdata.data)
-      .position(function (d) { return { x:d.coordinates[0], y:d.coordinates[1] } })
-      .style('radius', function (d) { return myApp.scale(d.binCount); })
+      // .data(aggdata.data)
+      .data(geodata)
+      .position(function (d) { return { x:d.coordinates.coordinates[0], y:d.coordinates.coordinates[1] } })
+      // .style('radius', function (d) { return myApp.scale(d.binCount); })
+      .style('radius', 6.0)
       .style('stroke', false)
       .style('fillOpacity', 0.4)
-      .style('fillColor', 'orange')
+      .style('fillColor', function(d) {
+        if (d.mental_illness == 0 || d.physical_illness == 0) {
+          return "orange";
+        } else {
+          return "red";
+        }
+      })
       .geoOn(geo.event.feature.mouseclick, function (evt) {
         var i = 0, anchor = null;
 
@@ -321,7 +337,7 @@ $(function () {
         range: true,
         min: min.getTime() / 1000,
         max: max.getTime() / 1000,
-        values: [ min.getTime() / 1000, min.getTime() / 1000 + 60 ],
+        values: [ min.getTime() / 1000, min.getTime() / 1000 + 3600 ],
         stop: function( event, ui ) {
           myApp.runQuery();
         }
