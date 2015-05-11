@@ -1,0 +1,15 @@
+
+Mongo:
+
+1) Sort
+
+
+2) Find
+
+
+3) Min/Max
+
+
+4) Create index
+Example:
+db.records.createIndex( { userid: 1 } )
