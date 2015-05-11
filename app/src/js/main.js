@@ -131,9 +131,9 @@ $(function () {
       .data(geodata)
       .position(function (d) { return { x:d.coordinates.coordinates[0], y:d.coordinates.coordinates[1] } })
       // .style('radius', function (d) { return myApp.scale(d.binCount); })
-      .style('radius', 6.0)
+      .style('radius', 10.0)
       .style('stroke', false)
-      .style('fillOpacity', 0.4)
+      .style('fillOpacity', 0.2)
       .style('fillColor', function(d) {
         if (d.mental_illness == 0 || d.physical_illness == 0) {
           return "orange";
